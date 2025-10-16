@@ -1,0 +1,33 @@
+//go:build ignore
+//kage:unit pixels
+
+package main
+
+var(
+    Seed float
+    Invert float
+)
+
+func random(st vec2) float {
+    return fract(sin(dot(st.xy, vec2(12.9898,78.233)))* Seed);
+}
+
+func Fragment(position vec4, texCoord vec2, _ vec4) vec4 {
+    srcColor := imageSrc0UnsafeAt(texCoord)
+    if srcColor.a == Invert {
+        return srcColor
+    }
+    
+    size := imageDstSize()
+    rnd := random(texCoord/size)
+    return vec4(vec3(rnd), srcColor.a)
+
+    // r := vec4(0.5)
+    // r.a = 0
+    // return r 
+    // srcColor.rgb += rnd
+    // return srcColor
+    // return vec4(vec3(rnd), 0)//srcColor.a)
+}
+
+

@@ -1,0 +1,16 @@
+//go:build ignore
+//kage:unit pixels
+
+package main
+
+var Value vec2
+
+func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
+	pos := texCoord.xy 
+	lightpos := vec3(Value, 50)
+	lightdir := normalize(lightpos - vec3(pos, 0))
+	normal := normalize(imageSrc0UnsafeAt(texCoord) - 0.5)
+	const ambient = 0.85
+	diffuse := 0.75 * max(0.0, dot(normal.xyz, lightdir))
+	return imageSrc0UnsafeAt(texCoord) * (ambient + diffuse)
+}

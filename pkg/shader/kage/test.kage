@@ -1,0 +1,96 @@
+
+//go:build ignore
+//kage:unit pixels
+
+package main
+
+var Value vec2
+var MixColor int
+var ColorThreshold float 
+var Radius int
+var BlurRadius int 
+
+// const Radius =6*2
+// const BlurRadius	= Radius/3;
+
+const Pi = 3.141592653589793238462643383279502884197169399375
+// The inverse of PI
+const invPi			= 1.0 / Pi;	
+const treshhold = 0.2
+
+func gauss(vec vec2, deviation float) float {
+    deviationSquare := pow(deviation, 2.0)
+    invDeviationSquare := 0.5 / deviationSquare
+    len := pow(vec.x, 2.0) + pow(vec.y, 2.0)
+    return exp( -len * invDeviationSquare ) * invPi * invDeviationSquare
+}
+
+func Fragment(position vec4, texCoord vec2, _ vec4) vec4 {
+    origin := findClosestRed(texCoord)
+    newColor := colorForValue(texCoord, origin)
+    if MixColor > 0 {
+        color := imageSrc0At(texCoord)
+        newColor = mix(color, newColor, 0.5)
+    }
+
+    return newColor
+}
+
+func handlePixel(c vec4) bool {
+    // red := vec4(1,1,1,1)
+    treshhold := ColorThreshold
+    return c.r > treshhold && c.b > treshhold && c.g > treshhold
+}
+
+func findClosestRed(texCoord vec2) vec2 {
+    result := imageDstSize()*2 
+    const treshhold = 0.99
+    const maxRadius = 60
+    for x := -maxRadius; x <= maxRadius; x++ {
+        if x < -Radius {
+            continue 
+        }
+        for y := -maxRadius; y <= maxRadius; y++ {
+
+            if y < -Radius {
+                continue 
+            }   
+            if x > Radius || y > Radius {
+                break
+            }
+            xy := vec2(float(x), float(y))
+            c := imageSrc0At( texCoord + xy)
+            if handlePixel(c) {
+                if length(xy) < length(result) {
+                    result = xy
+                }
+            }
+        }
+    }
+
+    return texCoord+result
+}
+func colorForValue(texCoord vec2, origin vec2) vec4 {
+    r := length(texCoord - origin) / float(Radius)
+    deviation := 1.0 + 12.0 * r * smoothstep(0.0, 1.0, r)
+    gradient :=  vec4(0)
+    const maxRadius = 60
+    for x := -maxRadius; x <= maxRadius; x++ {
+        if x < -BlurRadius {
+            continue 
+        }
+        for y := -maxRadius; y <= maxRadius; y++ {
+            
+            if y < -BlurRadius {
+                continue 
+            }
+            if x > BlurRadius || y > BlurRadius {
+                break
+            }
+            xy := vec2(float(x), float(y))
+            c := imageSrc0At( texCoord + xy )
+            gradient += c * gauss(xy, deviation)
+        }
+    }
+    return vec4( gradient.rgb, 1.0)
+}

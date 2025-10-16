@@ -1,0 +1,33 @@
+
+func rgb2hsv(c vec3) vec3 {
+    k := vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0)
+    p := mix(vec4(c.bg, k.wz), vec4(c.gb, k.xy), step(c.b, c.g))
+    q := mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r))
+    d := q.x - min(q.w, q.y)
+    e := 1.0e-10
+    return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+}
+
+func hsv2rgb(c vec3) vec3 {
+    k := vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0)
+    p := abs(fract(c.xxx + k.xyz) * 6.0 - k.www)
+    return c.z * mix(k.xxx, clamp(p - k.xxx, 0.0, 1.0), c.y)
+}
+
+func rgb2cmyk(rgb vec3) vec4 {
+    k := 1.0 - max(max(rgb.r, rgb.g), rgb.b)
+    return vec4(
+        (1.0 - rgb.r - k) / (1.0 - k),
+        (1.0 - rgb.g - k) / (1.0 - k),
+        (1.0 - rgb.b - k) / (1.0 - k),
+        k,
+    )
+}
+
+func cmyk2rgb(cmyk vec4) vec3 {
+    return vec3(
+        (1.0 - cmyk.x) * (1.0 - cmyk.w),
+		(1.0 - cmyk.y) * (1.0 - cmyk.w),
+		(1.0 - cmyk.z) * (1.0 - cmyk.w),
+    )
+}

@@ -1,0 +1,40 @@
+
+//go:build ignore
+//kage:unit pixels
+
+package main
+
+var Value vec2
+	
+// Radius of the blur for the whole effect
+const Radius = 100
+// Distance multiplier
+const Quality = 0.5
+const Pi = 3.141592653589793238462643383279502884197169399375
+// The inverse of PI
+const invPi			= 1.0 / Pi;	
+// Radius of the blur PER pixel
+const BlurRadius	= 5;
+	
+func gauss(vec vec2, deviation float) float {
+    deviationSquare := pow(deviation, 2.0)
+    invDeviationSquare := 0.5 / deviationSquare
+    len := pow(vec.x, 2.0) + pow(vec.y, 2.0)
+    return exp( -len * invDeviationSquare ) * invPi * invDeviationSquare
+}
+
+func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
+    r := length(texCoord - Value) / Radius
+    deviation := 1.0 + 12.0 * r * smoothstep(0.0, 1.0, r)
+    size := vec2(100,100) //imageDstSize()
+    sizeFactor := vec2(Quality / size);
+    gradient := vec4(0)
+    for x := -BlurRadius; x <= BlurRadius; x++ {
+        for y := -BlurRadius; y <= BlurRadius; y++ {
+            xy := vec2(float(x), float(y))
+            c := imageSrc0UnsafeAt( texCoord + xy * sizeFactor)
+            gradient += c * gauss(xy, deviation)
+        }
+    }
+    return vec4( gradient.rgb, 1.0 ) //* color
+}

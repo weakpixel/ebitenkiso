@@ -1,7 +1,7 @@
 package effect
 
 import (
-	"ebitenkiso/pkg/sprites"
+	"github.com/weakpixel/ebitenkiso/pkg/sprites"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )

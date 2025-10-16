@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"ebitenkiso/pkg/sprites"
+	"github.com/weakpixel/ebitenkiso/pkg/sprites"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"

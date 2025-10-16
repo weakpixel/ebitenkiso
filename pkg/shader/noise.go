@@ -1,10 +1,11 @@
 package shader
 
 import (
-	"ebitenkiso/pkg/timer"
 	_ "embed"
 	"math/rand"
 	"time"
+
+	"github.com/weakpixel/ebitenkiso/pkg/timer"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )

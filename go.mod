@@ -1,4 +1,4 @@
-module ebitenkiso
+module github.com/weakpixel/ebitenkiso
 
 go 1.25.1
 

@@ -4,6 +4,11 @@ import (
 	"encoding/json"
 	"io"
 	"os"
+
+	_ "image/jpeg"
+	_ "image/png"
+
+	"github.com/weakpixel/ebitenkiso/pkg/res"
 )
 
 func Load(in io.Reader) (*SpriteSheet, error) {
@@ -14,6 +19,14 @@ func Load(in io.Reader) (*SpriteSheet, error) {
 		return nil, err
 	}
 	return sheet, nil
+}
+func LoadResource(resource res.Resource) (*SpriteSheet, error) {
+	r, err := res.Open(resource)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+	return Load(r)
 }
 
 func LoadFile(filename string) (*SpriteSheet, error) {

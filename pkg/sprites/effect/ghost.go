@@ -30,14 +30,9 @@ func (g *Ghost) Add(x, y float64, dir bool) {
 }
 
 func (g *Ghost) Draw(sprite *sprites.Sprite, screen *ebiten.Image) {
-	colorScale := &ebiten.ColorScale{}
+	colorScale := ebiten.ColorScale{}
 	colorScale.ScaleAlpha(0.3)
-	last := len(g.instances) - 1
-	for idx, pos := range g.instances {
-		if idx == last {
-			colorScale = nil
-		}
+	for _, pos := range g.instances {
 		sprite.Draw(pos.x, pos.y, pos.dir, screen, colorScale)
 	}
-
 }

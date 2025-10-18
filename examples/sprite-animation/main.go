@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -15,6 +16,9 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 )
+
+//go:embed assets/*
+var assets embed.FS
 
 func main() {
 	start()
@@ -52,7 +56,8 @@ type Game struct {
 
 func (g *Game) Update() error {
 	if g.sprite == nil {
-		spriteUri := res.MustParse("examples/sprite-animation/run-cycle-48x48.json")
+		spriteUri := res.FromFS(assets, "assets/run-cycle-48x48.json")
+		///MustParse("examples/sprite-animation/run-cycle-48x48.json")
 		sprite, err := aseprite.LoadSprite(spriteUri)
 		if err != nil {
 			panic(err)

@@ -2,7 +2,10 @@ module github.com/weakpixel/ebitenkiso
 
 go 1.25.1
 
-require github.com/hajimehoshi/ebiten/v2 v2.9.1
+require (
+	github.com/Shopify/go-lua v0.0.0-20250718183320-1e37f32ad7d0
+	github.com/hajimehoshi/ebiten/v2 v2.9.1
+)
 
 require (
 	github.com/ebitengine/gomobile v0.0.0-20250923094054-ea854a63cce1 // indirect

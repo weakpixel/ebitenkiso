@@ -3,6 +3,7 @@ package res
 import (
 	"fmt"
 	"io"
+	"io/fs"
 	"net/http"
 	"net/url"
 	"os"
@@ -19,9 +20,13 @@ import (
 type Resource struct {
 	p      string
 	isHttp bool
+	fs     fs.FS
 }
 
 func Dir(r Resource) Resource {
+	if r.fs != nil {
+		return Resource{p: path.Dir(r.p), fs: r.fs}
+	}
 	if r.isHttp {
 		u, _ := url.Parse(r.p)
 		u.Path = path.Dir(u.Path)
@@ -31,6 +36,10 @@ func Dir(r Resource) Resource {
 }
 
 func Join(r Resource, elem ...string) Resource {
+	if r.fs != nil {
+		parts := append([]string{r.p}, elem...)
+		return Resource{p: path.Join(parts...), fs: r.fs}
+	}
 	if r.isHttp {
 		u, _ := url.Parse(r.p)
 		parts := append([]string{u.Path}, elem...)
@@ -55,6 +64,13 @@ func ReadAll(r Resource) ([]byte, error) {
 }
 
 func Open(r Resource) (io.ReadCloser, error) {
+	if r.fs != nil {
+		f, err := r.fs.Open(r.p)
+		if err != nil {
+			return nil, fmt.Errorf("fs.Open failed: %s", err)
+		}
+		return f, nil
+	}
 	if r.isHttp {
 		res, err := http.Get(r.p)
 		if err != nil {
@@ -122,7 +138,10 @@ func Parse(s string) (Resource, error) {
 		if err != nil {
 			return Resource{}, fmt.Errorf("filepath.Abs failed: %s", err)
 		}
-
 		return Resource{p: fullPath}, nil
 	}
+}
+
+func FromFS(fs fs.FS, p string) Resource {
+	return Resource{p: p, fs: fs}
 }

@@ -1,10 +1,10 @@
 package main
 
 import (
-	"embed"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/weakpixel/ebitenkiso/examples/assets"
 	"github.com/weakpixel/ebitenkiso/pkg/res"
 	"github.com/weakpixel/ebitenkiso/pkg/shader"
 	"github.com/weakpixel/ebitenkiso/pkg/sprites"
@@ -16,9 +16,6 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 )
-
-//go:embed assets/*
-var assets embed.FS
 
 func main() {
 	start()
@@ -56,7 +53,7 @@ type Game struct {
 
 func (g *Game) Update() error {
 	if g.sprite == nil {
-		spriteUri := res.FromFS(assets, "assets/run-cycle-48x48.json")
+		spriteUri := res.FromFS(assets.FS, "run-cycle-48x48.json")
 		///MustParse("examples/sprite-animation/run-cycle-48x48.json")
 		sprite, err := aseprite.LoadSprite(spriteUri)
 		if err != nil {

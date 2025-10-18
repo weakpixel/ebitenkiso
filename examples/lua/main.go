@@ -1,18 +1,15 @@
 package main
 
 import (
-	"embed"
 	"image/color"
 
+	"github.com/weakpixel/ebitenkiso/examples/assets"
 	vm "github.com/weakpixel/ebitenkiso/pkg/vm/lua"
 
 	"github.com/Shopify/go-lua"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 )
-
-//go:embed assets/*
-var luaFiles embed.FS
 
 type Player struct {
 	data map[string]any
@@ -108,7 +105,7 @@ func newPlayer(vm *vm.ScriptVM, name string, script string) *Player {
 	env.RegisterGetterSetterNumber("y", &player.Y)
 	env.RegisterMap("data", player.data)
 
-	raw, err := luaFiles.ReadFile(script)
+	raw, err := assets.FS.ReadFile(script)
 	if err != nil {
 		panic(err)
 	}
@@ -121,13 +118,13 @@ func newPlayer(vm *vm.ScriptVM, name string, script string) *Player {
 }
 func main() {
 	vm := vm.NewVM()
-	player1 := newPlayer(vm, "player1", "assets/player-mouse.lua")
+	player1 := newPlayer(vm, "player1", "player-mouse.lua")
 	player1.env.SetInt("PlayerLeft", int(ebiten.KeyArrowLeft))
 	player1.env.SetInt("PlayerRight", int(ebiten.KeyArrowRight))
 	player1.env.SetInt("PlayerUp", int(ebiten.KeyArrowUp))
 	player1.env.SetInt("PlayerDown", int(ebiten.KeyArrowDown))
 
-	player2 := newPlayer(vm, "player2", "assets/player-keyboard.lua")
+	player2 := newPlayer(vm, "player2", "player-keyboard.lua")
 	player2.env.SetInt("PlayerLeft", int(ebiten.KeyA))
 	player2.env.SetInt("PlayerRight", int(ebiten.KeyD))
 	player2.env.SetInt("PlayerUp", int(ebiten.KeyW))

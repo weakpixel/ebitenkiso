@@ -30,8 +30,8 @@ func TestSpritesheet(t *testing.T) {
 		anim.Update(time.Millisecond * 11)
 	}
 
-	if anim.curIndex != len(anim.Frames)-1 {
-		t.Errorf("run animation must be on last index: %d but is %d", len(anim.Frames)-1, anim.curIndex)
+	if anim.frameIndex != len(anim.Frames)-1 {
+		t.Errorf("run animation must be on last index: %d but is %d", len(anim.Frames)-1, anim.frameIndex)
 	}
 
 	anim = s.Animation("jump")
@@ -44,12 +44,12 @@ func TestSpritesheet(t *testing.T) {
 	}
 
 	anim.Update(time.Millisecond * 30)
-	if anim.curIndex != 0 {
-		t.Errorf("jump has only one frame curIndex must be zero but is: %d", anim.curIndex)
+	if anim.frameIndex != 0 {
+		t.Errorf("jump has only one frame frameIndex must be zero but is: %d", anim.frameIndex)
 	}
 	anim.Update(time.Millisecond * 30)
-	if anim.curIndex != 0 {
-		t.Errorf("jump has only one frame curIndex must be zero but is: %d", anim.curIndex)
+	if anim.frameIndex != 0 {
+		t.Errorf("jump has only one frame frameIndex must be zero but is: %d", anim.frameIndex)
 	}
 
 }

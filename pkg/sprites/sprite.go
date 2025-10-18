@@ -15,8 +15,8 @@ func NewSprite(sheet *SpriteSheet) *Sprite {
 type Sprite struct {
 	sheet  *SpriteSheet
 	anim   *Animation
-	Src    string
 	Shader Shader
+	geoM   ebiten.GeoM
 }
 
 func (s *Sprite) SpriteSheet() *SpriteSheet {
@@ -37,45 +37,36 @@ func (s *Sprite) SetAnimation(name string, loop bool) {
 func (s *Sprite) Update(dt time.Duration) {
 	if s.anim != nil {
 		s.anim.Update(dt)
-		if s.Shader != nil {
-			s.Shader.Update(dt)
-		}
+	}
+	if s.Shader != nil {
+		s.Shader.Update(dt)
 	}
 
 }
 
-func (s *Sprite) Draw(x float64, y float64, flipH bool, screen *ebiten.Image, colorScale *ebiten.ColorScale) {
+func (s *Sprite) Draw(x float64, y float64, flipH bool, screen *ebiten.Image, colorScale ebiten.ColorScale) {
 	if s.anim != nil {
 		img := s.anim.Image()
 
-		if colorScale == nil {
-			colorScale = &ebiten.ColorScale{}
+		s.geoM.Reset()
+		if flipH {
+			w := float64(img.Bounds().Dx())
+			s.geoM.Scale(-1, 1)
+			s.geoM.Translate(w, 0)
 		}
 
-		geom := ebiten.GeoM{}
-		if flipH {
-			geom.Scale(-1, 1)
-			geom.Translate(float64(img.Bounds().Dx()), 0)
-		}
-		geom.Translate(x, y)
+		s.geoM.Translate(x, y)
 
 		if s.Shader == nil {
-			opt := &ebiten.DrawImageOptions{
-				GeoM:       geom,
-				ColorScale: *colorScale,
-			}
-			screen.DrawImage(img, opt)
+			screen.DrawImage(img, &ebiten.DrawImageOptions{
+				GeoM:       s.geoM,
+				ColorScale: colorScale,
+			})
 		} else {
-			// screen.DrawImage(img, &ebiten.DrawImageOptions{
-			// 	GeoM:       geom,
-			// 	ColorScale: *colorScale,
-			// })
-
-			opt := &ebiten.DrawRectShaderOptions{
-				GeoM:       geom,
-				ColorScale: *colorScale,
-			}
-			s.Shader.Draw(img, screen, opt)
+			s.Shader.Draw(img, screen, &ebiten.DrawRectShaderOptions{
+				GeoM:       s.geoM,
+				ColorScale: colorScale,
+			})
 		}
 	}
 }

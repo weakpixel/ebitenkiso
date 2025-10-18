@@ -2,33 +2,33 @@ package aseprite
 
 import (
 	"image"
-	"path/filepath"
 	"time"
 
+	"github.com/weakpixel/ebitenkiso/pkg/res"
 	"github.com/weakpixel/ebitenkiso/pkg/sprites"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-func LoadSprite(animFile string, assetBase string) (*sprites.Sprite, error) {
-	if assetBase == "" {
-		assetBase = filepath.Dir(animFile)
-	}
+func LoadSprite(resource res.Resource) (*sprites.Sprite, error) {
 
-	sp, err := LoadFile(animFile)
+	sp, err := LoadResource(resource)
 	if err != nil {
 		return nil, err
 	}
+	dir := res.Dir(resource)
+	srcImg := res.Join(dir, sp.Meta.Image)
 
-	srcImg := filepath.Join(assetBase, sp.Meta.Image)
-	img, _, err := ebitenutil.NewImageFromFile(srcImg)
+	img, err := res.Image(srcImg)
 	if err != nil {
 		return nil, err
 	}
 	sheet := ToSpriteSheet(sp, img)
 	sprite := sprites.NewSprite(sheet)
-	sprite.Src = srcImg
+	if len(sprite.SpriteSheet().Tags) > 0 {
+		sprite.SetAnimation(sprite.SpriteSheet().Tags[0].Name, true)
+	}
+
 	return sprite, nil
 }
 

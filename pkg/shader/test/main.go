@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
+	_ "image/jpeg"
 	_ "image/png"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -70,12 +71,10 @@ func (g *Game) Update() error {
 		fmt.Println("blurRadius: ", blurRadius)
 	}
 
-	// fmt.Println("FPS: ", ebiten.ActualFPS())
 	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	// screen.DrawImage(runnerImage, nil)
 
 	if curShader != nil {
 		op := &ebiten.DrawRectShaderOptions{}

@@ -23,6 +23,10 @@ type Resource struct {
 	fs     fs.FS
 }
 
+func (r Resource) String() string {
+	return r.p
+}
+
 func Dir(r Resource) Resource {
 	if r.fs != nil {
 		return Resource{p: path.Dir(r.p), fs: r.fs}
